@@ -12,13 +12,59 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .main-container {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .market-selector {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .market-selector h2 {
+      margin: 0 0 15px 0;
+      color: #1f2937;
+    }
+
+    .market-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .market-button {
+      padding: 10px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .market-button:hover {
+      border-color: #10a37f;
+      background: #f0fdf4;
+    }
+
+    .market-button.active {
+      border-color: #10a37f;
+      background: #10a37f;
+      color: white;
     }
 
     .chat-container {
       width: 100%;
-      max-width: 500px;
-      height: 90vh;
+      height: 70vh;
       background-color: #ffffff;
       border-radius: 16px;
       display: flex;
@@ -57,12 +103,14 @@
       background-color: #dcfce7;
       align-self: flex-end;
       text-align: right;
+      margin-left: auto;
     }
 
     .bot-message {
       background-color: #e0f2fe;
       align-self: flex-start;
       text-align: left;
+      margin-right: auto;
     }
 
     .input-container {
@@ -100,35 +148,113 @@
       background-color: #ccc;
       border-radius: 10px;
     }
+
+    .price-up {
+      color: #22c55e;
+    }
+
+    .price-down {
+      color: #ef4444;
+    }
   </style>
 </head>
 <body>
 
-<div class="chat-container">
-  <div class="chat-header">📈 Stock Market Insights Bot</div>
-
-  <div class="chat-box" id="chat-box">
-    <!-- Messages will appear here -->
+<div class="main-container">
+  <div class="market-selector">
+    <h2>Select Market</h2>
+    <div class="market-buttons">
+      <button class="market-button active" data-market="IN">🇮🇳 India</button>
+      <button class="market-button" data-market="US">🇺🇸 USA</button>
+      <button class="market-button" data-market="UK">🇬🇧 UK</button>
+      <button class="market-button" data-market="JP">🇯🇵 Japan</button>
+      <button class="market-button" data-market="CN">🇨🇳 China</button>
+      <button class="market-button" data-market="DE">🇩🇪 Germany</button>
+    </div>
   </div>
 
-  <div class="input-container">
-    <input type="text" id="userInput" placeholder="Ask about stocks or type a symbol like AAPL..." />
-    <button onclick="handleUserInput()">Ask</button>
+  <div class="chat-container">
+    <div class="chat-header">📈 Stock Market Insights Bot</div>
+
+    <div class="chat-box" id="chat-box">
+      <div class="message bot-message">
+        Welcome to Global Stock Market Insights! You can:
+        <br>📈 Search for any company worldwide
+        <br>🏢 Use company names or stock symbols
+        <br>💬 Ask questions about stocks and markets
+        <br><br>Examples:
+        <br>- "Reliance"
+        <br>- "TCS"
+        <br>- "Infosys"
+        <br>- "HDFC"
+      </div>
+    </div>
+
+    <div class="input-container">
+      <input type="text" id="userInput" placeholder="Search for any company (e.g., Reliance, TCS, Infosys)..." />
+      <button onclick="handleUserInput()">Search</button>
+    </div>
   </div>
 </div>
 
 <script>
+  let currentMarket = 'IN'; // Default to Indian market
+
+  // Handle market selection
+  document.querySelectorAll('.market-button').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('.market-button').forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      currentMarket = button.dataset.market;
+      // Clear chat and show new welcome message
+      document.getElementById('chat-box').innerHTML = '';
+      showWelcomeMessage();
+    });
+  });
+
+  function showWelcomeMessage() {
+    const examples = {
+      'IN': ['Reliance', 'TCS', 'Infosys', 'HDFC'],
+      'US': ['Apple', 'Microsoft', 'Tesla', 'Amazon'],
+      'UK': ['HSBC', 'BP', 'Vodafone', 'Barclays'],
+      'JP': ['Toyota', 'Sony', 'Honda', 'Nintendo'],
+      'CN': ['Alibaba', 'Tencent', 'Baidu', 'JD.com'],
+      'DE': ['Siemens', 'Volkswagen', 'BMW', 'SAP']
+    };
+
+    const message = `
+      Welcome to ${getCountryName(currentMarket)} Stock Market Insights! You can:
+      <br>📈 Search for any company in ${getCountryName(currentMarket)}
+      <br>🏢 Use company names or stock symbols
+      <br>💬 Ask questions about stocks and markets
+      <br><br>Examples:
+      <br>- "${examples[currentMarket][0]}"
+      <br>- "${examples[currentMarket][1]}"
+      <br>- "${examples[currentMarket][2]}"
+      <br>- "${examples[currentMarket][3]}"
+    `;
+    appendMessage(message, 'bot-message');
+  }
+
+  function getCountryName(code) {
+    const countries = {
+      'IN': 'Indian',
+      'US': 'US',
+      'UK': 'UK',
+      'JP': 'Japanese',
+      'CN': 'Chinese',
+      'DE': 'German'
+    };
+    return countries[code];
+  }
+
   function appendMessage(message, sender) {
     const chatBox = document.getElementById('chat-box');
     const msg = document.createElement('div');
     msg.className = `message ${sender}`;
-    msg.textContent = message;
+    msg.innerHTML = message;
     chatBox.appendChild(msg);
     chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  function isStockSymbol(input) {
-    return /^[A-Za-z]{1,10}$/.test(input.trim());
   }
 
   function handleUserInput() {
@@ -138,42 +264,44 @@
 
     appendMessage(userInput, 'user-message');
     inputField.value = '';
-    appendMessage("Thinking...", 'bot-message');
+    appendMessage("Searching...", 'bot-message');
 
-    if (isStockSymbol(userInput)) {
-      fetch(`/get_stock_data/${userInput}`)
-        .then(res => res.json())
-        .then(data => {
-          const lastBotMsg = document.querySelector('.bot-message:last-child');
-          lastBotMsg.remove();
-
-          if (data.error) {
-            appendMessage(`Error: ${data.error}`, 'bot-message');
-          } else {
-            const reply = `📊 ${data.symbol}\nLast Price: ${data.last}\nVolume: ${data.volume}\nHigh: ${data.high}\nLow: ${data.low}`;
-            appendMessage(reply, 'bot-message');
-          }
-        })
-        .catch(() => {
-          appendMessage("Failed to fetch stock data.", 'bot-message');
-        });
-    } else {
-      fetch('/ask_question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: userInput })
+    fetch('/get_stock_data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        symbol: userInput,
+        market: currentMarket
       })
-        .then(res => res.json())
-        .then(data => {
-          const lastBotMsg = document.querySelector('.bot-message:last-child');
-          lastBotMsg.remove();
-          appendMessage(data.answer, 'bot-message');
-        })
-        .catch(() => {
-          appendMessage("Sorry, couldn't get a response.", 'bot-message');
-        });
-    }
+    })
+      .then(res => res.json())
+      .then(data => {
+        const lastBotMsg = document.querySelector('.bot-message:last-child');
+        lastBotMsg.remove();
+
+        if (data.error) {
+          appendMessage(`Error: ${data.error}`, 'bot-message');
+        } else {
+          const changeClass = data.change >= 0 ? 'price-up' : 'price-down';
+          const changeEmoji = data.change >= 0 ? '📈' : '📉';
+          const reply = `
+📊 ${data.symbol}
+💰 Current Price: ₹${data.current}
+${changeEmoji} Change: <span class="${changeClass}">₹${data.change} (${data.percent_change}%)</span>
+📈 High: ₹${data.high}
+📉 Low: ₹${data.low}
+🌅 Open: ₹${data.open}
+🌙 Previous Close: ₹${data.previous_close}`;
+          appendMessage(reply, 'bot-message');
+        }
+      })
+      .catch(() => {
+        appendMessage("Sorry, couldn't find that company. Try another name or symbol.", 'bot-message');
+      });
   }
+
+  // Show initial welcome message
+  showWelcomeMessage();
 </script>
 
 </body>
