@@ -3,8 +3,8 @@ import requests
 import google.generativeai as genai
 
 # 🔐 Paste your API keys directly here
-GEMINI_API_KEY = "AIzaSyAoHKRHtXA1MxxG1UFxyWEC6v8bzomMdww"
-FINNHUB_API_KEY = "cvtpic9r01qjg135icbgcvtpic9r01qjg135icc0"
+GEMINI_API_KEY = "API_KEY"
+FINNHUB_API_KEY = "API_KEY"
 
 # Configure Gemini
 genai.configure(api_key=GEMINI_API_KEY)
