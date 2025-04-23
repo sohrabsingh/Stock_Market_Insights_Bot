@@ -10,7 +10,12 @@ FINNHUB_API_KEY = "cvtsfb9r01qjg1362mv0cvtsfb9r01qjg1362mvg"
 ALPHA_VANTAGE_API_KEY = "HHB2E7F9CS4GTSR1"  # Get from www.alphavantage.co
 
 # Market configurations
-
+MARKET_CONFIGS = {
+    'IN': {
+        'exchange': 'NSE',
+        'currency': 'INR',
+        'currency_symbol': '₹',
+        'usd_to_local': 86.0  # USD to INR conversion rate
     },
     'US': {
         'exchange': 'US',
